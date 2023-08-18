@@ -1,0 +1,25 @@
+{
+  "name": "@novemberizing/wordpress",
+  "version": "0.0.1",
+  "description": "novemberizing's wordpress json frontend",
+  "main": "./src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "keywords": [
+    "novemberizing",
+    "wordpress",
+    "node",
+    "javascript",
+    "frontend"
+  ],
+  "author": "novemberizing <novemberizing@gmail.com>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "axios": "^1.4.0"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0"
+  }
+}
