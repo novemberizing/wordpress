@@ -1,7 +1,11 @@
 import { ApplicationServerServiceModule } from "@novemberizing/app";
 import Storage from "@novemberizing/storage";
 
+import { XMLSerializer, DOMParser } from "@xmldom/xmldom";
+
 import WordpressExceptionUninitialized from "../exception/Uninitialized.js";
+
+import novemberizing from "../novemberizing.js";
 
 const extension = {
     get: {
@@ -10,13 +14,39 @@ const extension = {
 };
 
 export default class WordpressPost extends ApplicationServerServiceModule {
-    static hide(post) {
+
+    static #parser = new DOMParser();
+    static #serializer = new XMLSerializer();
+
+    static #dom(element) {
+        if(element.removeAttribute) {
+            element.removeAttribute("class");
+        }
+
+        if(element.childNodes && element.childNodes.length > 0) {
+            for(let i = 0; i < element.childNodes.length; i++) {
+                WordpressPost.#dom(element.childNodes[i]);
+            }
+        }
+
+        return element;
+    }
+    static #str(root) {
+        let str = '';
+        const body = root.getElementsByTagName("body")[0];
+        for(let i = 0; i < body.childNodes.length; i++) {
+            str += WordpressPost.#serializer.serializeToString(body.childNodes[i]).replace(/ xmlns="[^"]+"/, '');
+        }
+        return str;
+    }
+
+    static #hide(post) {
         delete post.guid;
         delete post.status;
         delete post.post;
         delete post.link;
         post.title = post.title.rendered;
-        post.content = WordpressManager.#str(WordpressManager.#dom(WordpressManager.#parser.parseFromString(`<body>${post.content.rendered}</body>`, "text/html")));
+        post.content = WordpressPost.#str(WordpressPost.#dom(WordpressPost.#parser.parseFromString(`<body>${post.content.rendered}</body>`, "text/html")));
         delete post.author;
         delete post.comment_status;
         delete post.ping_status;
@@ -33,6 +63,7 @@ export default class WordpressPost extends ApplicationServerServiceModule {
     }
 
     #storage = null;
+    #host = null;
 
     constructor(service, config) {
         super("/post", service, config);
@@ -46,10 +77,20 @@ export default class WordpressPost extends ApplicationServerServiceModule {
         } else {
             throw new WordpressExceptionUninitialized();
         }
+
+        if(config.host) {
+            this.#host = config.host;
+        } else if(service.config.host) {
+            this.#host = service.config.host;
+        }
     }
 
     async get(id) {
-        return await this.#storage.query("get", id); 
+        const post = WordpressPost.#hide(id ? await novemberizing.http.get(`${this.#host}/wp/v2/posts/${id}`) : novemberizing.array.front(await novemberizing.http.get(`${this.#host}/wp/v2/posts&offset=0`)));
+
+        const extension = await this.#storage.query("get", id ? id : post.id);
+
+        return Object.assign(post, { extension });
     }
 
     async off() {

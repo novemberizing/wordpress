@@ -26,7 +26,8 @@
             "WordpressManager": {
                 "host": "https://content.bubus.co.kr/?rest_route=",
                 "modules": {
-                    "WordpressPost": {}
+                    "WordpressPost": {},
+                    "WordpressMedia": {}
                 }
             }
         }
