@@ -25,6 +25,10 @@ export default class WordpressManager extends ApplicationServerService {
                 await WordpressManager.call(async () => res.send(await this.post()),
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
+            server.express.get(`${this.path}/post/:id`, async (req, res) => {
+                await WordpressManager.call(async () => res.send(await this.post(req.params.id)),
+                                                  e  => res.status(500).send(WordpressManager.error(e)));
+            });
         }
     }
 
