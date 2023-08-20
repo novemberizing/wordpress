@@ -5,11 +5,13 @@ import axios from "axios";
 import { XMLSerializer, DOMParser } from "@xmldom/xmldom";
 
 import WordpressPost from "./module/Post.js";
+import WordpressMedia from "./module/Media.js";
 
 
 export default class WordpressManager extends ApplicationServerService {
     static {
         Application.use(WordpressPost);
+        Application.use(WordpressMedia);
     }
 
     static #parser = new DOMParser();
@@ -37,27 +39,8 @@ export default class WordpressManager extends ApplicationServerService {
         }
         return str;
     }
-    static #hide(post) {
-        delete post.guid;
-        delete post.status;
-        delete post.post;
-        delete post.link;
-        post.title = post.title.rendered;
-        post.content = WordpressManager.#str(WordpressManager.#dom(WordpressManager.#parser.parseFromString(`<body>${post.content.rendered}</body>`, "text/html")));
-        delete post.author;
-        delete post.comment_status;
-        delete post.ping_status;
-        delete post.sticky;
-        delete post.template;
-        delete post.categories;
-        delete post.tags;
-        delete post._links;
-        delete post.type;
-        delete post.excerpt;
-        delete post.format;
 
-        return post;
-    }
+    
 
     #host = null;
 
@@ -76,17 +59,17 @@ export default class WordpressManager extends ApplicationServerService {
         }
     }
 
-    async post() {
+    async post(id) {
         /** TODO: 최신 포스트만 가지고 오도록 한다. */
         const response = await axios.get(`${this.#host}/wp/v2/posts`);
-        const posts = response.data.map(WordpressManager.#hide);
+        const posts = response.data.map(WordpressPost.hide);
 
         const post = posts[0];
 
+        const media = WordpressMedia.hide(post.featured_media ? await axios.get(`${this.#host}/wp/v2/media/${post.featured_media}`) : null);
+
         const extension = await this.moduleCall("/post", "get", post.id);
 
-        console.log(extension);
-
-        return Object.assign(post, extension);
+        return Object.assign(post, { extension }, { media });
     }
 }
