@@ -1,6 +1,6 @@
 {
   "name": "@novemberizing/wordpress",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "novemberizing's wordpress json frontend",
   "main": "./src/index.js",
   "type": "module",
@@ -17,6 +17,11 @@
   "author": "novemberizing <novemberizing@gmail.com>",
   "license": "MPL-2.0",
   "dependencies": {
+    "@novemberizing/app": "*",
+    "@novemberizing/config": "*",
+    "@novemberizing/log": "*",
+    "@novemberizing/storage": "*",
+    "@xmldom/xmldom": "^0.8.10",
     "axios": "^1.4.0"
   },
   "devDependencies": {

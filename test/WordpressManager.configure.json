@@ -1,0 +1,34 @@
+{
+    "administrator": {
+        "engine": "ApplicationServerExpress",
+        "port": 50001,
+        "storage": {
+            "url": "mysql://root@localhost/novemberizing",
+            "adapter": {
+                "password": "melong@17"
+            }
+        },
+        "services": {
+            "ApplicationServerServiceRoot": {}
+        }
+    },
+    "server": {
+        "engine": "ApplicationServerExpress",
+        "port": 40001,
+        "storage": {
+            "url": "mysql://root@localhost/novemberizing",
+            "adapter": {
+                "password": "melong@17"
+            }
+        },
+        "services": {
+            "ApplicationServerServiceRoot": {},
+            "WordpressManager": {
+                "host": "https://content.bubus.co.kr/?rest_route=",
+                "modules": {
+                    "WordpressPost": {}
+                }
+            }
+        }
+    }
+}
