@@ -12,6 +12,9 @@ const novemberizing = {
     },
     array: {
         front: o => o[0]
+    },
+    dom: {
+        text: o => o.textContent
     }
 };
 

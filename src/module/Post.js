@@ -56,7 +56,8 @@ export default class WordpressPost extends ApplicationServerServiceModule {
         delete post.tags;
         delete post._links;
         delete post.type;
-        delete post.excerpt;
+        post.excerpt = novemberizing.dom.text(WordpressPost.#parser.parseFromString(post.excerpt.rendered, "text/html"));
+        // delete post.excerpt;
         delete post.format;
 
         return post;
