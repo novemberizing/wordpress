@@ -14,7 +14,11 @@ const novemberizing = {
         front: o => o[0]
     },
     dom: {
-        text: o => o.textContent
+        text: o => o.textContent,
+        get: (element, tag, index = 0) => {
+            const elements = element.getElementsByTagName(tag);
+            return elements[index];
+        }
     }
 };
 
