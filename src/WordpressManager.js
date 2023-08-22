@@ -25,33 +25,35 @@ export default class WordpressManager extends ApplicationServerService {
 
         if(server.express) {
             server.express.get(`${this.path}/post`, async (req, res) => {
-                await WordpressManager.call(async () => res.send(await this.post()),
+                await WordpressManager.call(async () => res.send(await this.post(null, req.user)),
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
             server.express.get(`${this.path}/post/:id`, async (req, res) => {
-                await WordpressManager.call(async () => res.send(await this.post(req.params.id)),
+                await WordpressManager.call(async () => res.send(await this.post(req.params.id, req.user)),
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
 
             server.express.get(`${this.path}/post/:id/like`, async (req, res) => {
-                await WordpressManager.call(async () => res.send(await this.like(req.params.id, req.query)),
+                console.log("wordpress", req.user);
+                await WordpressManager.call(async () => res.send(await this.like(req.params.id, req.user)),
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
         }
     }
 
-    async post(id) {
+    async post(id, user) {
         let post = await this.moduleCall("/post", "get", id);
 
         if(post) {
             post = Object.assign(post, { media: await this.moduleCall("/media", "get", post.featured_media) });
+            post = Object.assign(post, { me: await this.moduleCall("/post/like", "get", post.featured_media, user && user.email) });
             delete post.featured_media;
         }
 
         return post;
     }
 
-    async like(id, o) {
-        return await this.moduleCall("/post/like", "toggle", id, o.email);
+    async like(id, user) {
+        return await this.moduleCall("/post/like", "toggle", id, user && user.email);
     }
 }

@@ -6,6 +6,9 @@ import novemberizing from "../../novemberizing.js";
 const extension = {
     toggle: {
         sql: "CALL PROCEDURE_WORDPRESS_POST_LIKE_TOGGLE(?, ?)"
+    },
+    get: {
+        sql: "CALL PROCEDURE_WORDPRESS_POST_LIKE_GET(?, ?)"
     }
 };
 
@@ -28,6 +31,10 @@ export default class WordpressPostLike extends ApplicationServerServiceModule {
 
     async toggle(id, email) {
         return await this.#storage.query("toggle", id, email);
+    }
+
+    async get(id, email) {
+        return await this.#storage.query("get", id, email);
     }
 
     async off() {
