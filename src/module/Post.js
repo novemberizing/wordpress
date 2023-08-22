@@ -9,7 +9,7 @@ import novemberizing from "../novemberizing.js";
 
 const extension = {
     get: {
-        sql: "CALL PROCEDURE_WORDPRESS_POST_GET(?)"
+        sql: "CALL PROCEDURE_WORDPRESS_POST_GET(?, ?)"
     }
 };
 
@@ -86,10 +86,10 @@ export default class WordpressPost extends ApplicationServerServiceModule {
         }
     }
 
-    async get(id) {
+    async get(id, email) {
         const post = WordpressPost.#hide(id ? await novemberizing.http.get(`${this.#host}/wp/v2/posts/${id}`) : novemberizing.array.front(await novemberizing.http.get(`${this.#host}/wp/v2/posts&offset=0`)));
 
-        const extension = await this.#storage.query("get", id ? id : post.id);
+        const extension = await this.#storage.query("get", id ? id : post.id, email);
 
         return Object.assign(post, { extension });
     }

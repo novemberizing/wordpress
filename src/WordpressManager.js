@@ -7,8 +7,6 @@ import WordpressPost from "./module/Post.js";
 import WordpressPostLike from "./module/post/Like.js";
 import WordpressMedia from "./module/Media.js";
 
-import WordpressExceptionUnsupported from "./exception/Unsupported.js";
-
 export default class WordpressManager extends ApplicationServerService {
     static {
         Application.use(WordpressPost);
@@ -42,11 +40,12 @@ export default class WordpressManager extends ApplicationServerService {
     }
 
     async post(id, user) {
-        let post = await this.moduleCall("/post", "get", id);
+        let post = await this.moduleCall("/post", "get", id, user && user.email);
+        console.log(user);
 
         if(post) {
             post = Object.assign(post, { media: await this.moduleCall("/media", "get", post.featured_media) });
-            post = Object.assign(post, { me: await this.moduleCall("/post/like", "get", post.featured_media, user && user.email) });
+            post = Object.assign(post, await this.moduleCall("/post/like", "get", post.id, user && user.email));
             delete post.featured_media;
         }
 
