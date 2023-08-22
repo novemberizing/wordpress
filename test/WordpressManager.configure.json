@@ -3,7 +3,7 @@
         "engine": "ApplicationServerExpress",
         "port": 50001,
         "storage": {
-            "url": "mysql://root@localhost/novemberizing",
+            "url": "mysql://root@localhost/iam",
             "adapter": {
                 "password": "melong@17"
             }
@@ -16,7 +16,7 @@
         "engine": "ApplicationServerExpress",
         "port": 40001,
         "storage": {
-            "url": "mysql://root@localhost/novemberizing",
+            "url": "mysql://root@localhost/iam",
             "adapter": {
                 "password": "melong@17"
             }
@@ -27,6 +27,7 @@
                 "host": "https://content.bubus.co.kr/?rest_route=",
                 "modules": {
                     "WordpressPost": {},
+                    "WordpressPostLike": {},
                     "WordpressMedia": {}
                 }
             }

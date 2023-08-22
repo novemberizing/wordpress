@@ -1,6 +1,6 @@
 {
   "name": "@novemberizing/wordpress",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "novemberizing's wordpress json frontend",
   "main": "./src/index.js",
   "type": "module",

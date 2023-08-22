@@ -20,7 +20,7 @@ describe("WordpressManager", () => {
 
         await Application.on(await Config.gen({ url: "fs://./test/WordpressManager.configure.json" }));
 
-        console.log(await Application.call("/wordpress", "post"));
+        console.log(await Application.call("/wordpress", "like", 7, { email: "novemberizing@gmail.com" }));
 
         await Application.off();
     });

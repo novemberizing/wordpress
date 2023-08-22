@@ -4,12 +4,15 @@ import Application from "@novemberizing/app";
 import axios from "axios";
 
 import WordpressPost from "./module/Post.js";
+import WordpressPostLike from "./module/post/Like.js";
 import WordpressMedia from "./module/Media.js";
 
+import WordpressExceptionUnsupported from "./exception/Unsupported.js";
 
 export default class WordpressManager extends ApplicationServerService {
     static {
         Application.use(WordpressPost);
+        Application.use(WordpressPostLike);
         Application.use(WordpressMedia);
     }
 
@@ -29,6 +32,11 @@ export default class WordpressManager extends ApplicationServerService {
                 await WordpressManager.call(async () => res.send(await this.post(req.params.id)),
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
+
+            server.express.get(`${this.path}/post/:id/like`, async (req, res) => {
+                await WordpressManager.call(async () => res.send(await this.like(req.params.id, req.query)),
+                                                  e  => res.status(500).send(WordpressManager.error(e)));
+            });
         }
     }
 
@@ -41,5 +49,9 @@ export default class WordpressManager extends ApplicationServerService {
         }
 
         return post;
+    }
+
+    async like(id, o) {
+        return await this.moduleCall("/post/like", "toggle", id, o.email);
     }
 }
