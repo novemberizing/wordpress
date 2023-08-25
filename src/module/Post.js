@@ -96,6 +96,20 @@ export default class WordpressPost extends ApplicationServerServiceModule {
         return Object.assign(post, { extension });
     }
 
+    async posts(page, email) {
+        let posts = await novemberizing.http.get(`${this.#host}/wp/v2/posts&page=${page}`);
+
+        if(Array.isArray(posts)) {
+            for(let i = 0; i < posts.length; i++) {
+                posts[i] = WordpressPost.#hide(posts[i]);
+                const extension = await this.#storage.query("get", posts[i].id, email);
+                posts[i] = Object.assign(posts[i], { extension });
+            }
+        }
+
+        return posts;
+    }
+
     async off() {
         this.#storage.close();
     }

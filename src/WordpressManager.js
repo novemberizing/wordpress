@@ -39,6 +39,20 @@ export default class WordpressManager extends ApplicationServerService {
         }
     }
 
+    async posts(page, user) {
+        let posts = await this.moduleCall("/post", "posts", page && 1, user && user.email);
+
+        if(Array.isArray(posts)) {
+            for(let i = 0; i < posts.length; i++) {
+                posts[i] = Object.assign(posts[i], { media: await this.moduleCall("/media", "get", posts[i].featured_media) });
+                posts[i] = Object.assign(posts[i], await this.moduleCall("/post/like", "get", posts[i].id, user && user.email));
+                delete posts[i].featured_media;
+            }
+        }
+
+        return posts;
+    }
+
     async post(id, user) {
         let post = await this.moduleCall("/post", "get", id, user && user.email);
         console.log(user);
@@ -46,6 +60,7 @@ export default class WordpressManager extends ApplicationServerService {
         if(post) {
             post = Object.assign(post, { media: await this.moduleCall("/media", "get", post.featured_media) });
             post = Object.assign(post, await this.moduleCall("/post/like", "get", post.id, user && user.email));
+
             delete post.featured_media;
         }
 
