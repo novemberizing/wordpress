@@ -97,6 +97,8 @@ export default class WordpressPost extends ApplicationServerServiceModule {
     }
 
     async posts(page, email) {
+        console.log(page);
+        console.log(`${this.#host}/wp/v2/posts&page=${page}`);
         let posts = await novemberizing.http.get(`${this.#host}/wp/v2/posts&page=${page}`);
 
         if(Array.isArray(posts)) {

@@ -22,8 +22,8 @@ export default class WordpressManager extends ApplicationServerService {
         this.#host = config.host;
 
         if(server.express) {
-            server.express.get(`${this.path}/post`, async (req, res) => {
-                await WordpressManager.call(async () => res.send(await this.post(null, req.user)),
+            server.express.get(`${this.path}/post/`, async (req, res) => {
+                await WordpressManager.call(async () => res.send(await this.posts(req.query.page, req.user)),
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
             server.express.get(`${this.path}/post/:id`, async (req, res) => {
@@ -40,7 +40,7 @@ export default class WordpressManager extends ApplicationServerService {
     }
 
     async posts(page, user) {
-        let posts = await this.moduleCall("/post", "posts", page && 1, user && user.email);
+        let posts = await this.moduleCall("/post", "posts", page || 1, user && user.email);
 
         if(Array.isArray(posts)) {
             for(let i = 0; i < posts.length; i++) {
