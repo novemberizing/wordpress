@@ -58,6 +58,8 @@ export default class WordpressMedia extends ApplicationServerServiceModule {
     }
 
     async multiple(identities) {
-        return WordpressMedia.#hide(await novemberizing.http.get(`${this.#host}/wp/v2/media?includes=${identities}`));
+        const medias = novemberizing.as.array(await novemberizing.http.get(`${this.#host}/wp/v2/media&include=${identities.join(',')}`));
+
+        return medias.map(media => WordpressMedia.#hide(media));
     }
 }

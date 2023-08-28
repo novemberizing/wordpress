@@ -49,7 +49,7 @@ export default class WordpressManager extends ApplicationServerService {
 
     async postsPageGet(page, user) {
         const posts = await this.moduleCall("/post", "list", page || 1, user && user.email);
-        const medias = await this.moduleCall("/media", "multiple", posts.map(post => post.featured_media)) || [];
+        const medias = await this.moduleCall("/media", "multiple", posts.map(post => post.featured_media));
 
         return posts.map((post, i) => {
             delete post.featured_media;
@@ -59,7 +59,7 @@ export default class WordpressManager extends ApplicationServerService {
 
     async postsGet(identities, user) {
         const posts = await this.moduleCall("/post", "multiple", identities, user && user.email);
-        const medias = await this.moduleCall("/media", "multiple", posts.map(post => post.featured_media)) || [];
+        const medias = await this.moduleCall("/media", "multiple", posts.map(post => post.featured_media));
 
         return posts.map(post => {
             post = Object.assign(post, { media: medias.find(o => o.id === post.featured_media) });

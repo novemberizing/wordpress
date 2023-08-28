@@ -22,6 +22,8 @@ describe("WordpressManager", () => {
 
         console.log(await Application.call("/wordpress", 'postGet', 0, { email: "novemberizing@gmail.com" }));
 
+        console.log(await Application.call("/wordpress", 'postsGet', [7, 30], { email: "novemberizing@gmail.com" }));
+
 
 
         console.log(await Application.call("/wordpress", "postLike", 7, { email: "novemberizing@gmail.com" }));

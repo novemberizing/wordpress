@@ -96,19 +96,19 @@ export default class WordpressPost extends ApplicationServerServiceModule {
     }
 
     async multiple(identities, email) {
-        const posts = await novemberizing.http.get(`${this.#host}/wp/v2/posts?include=${identities}`);
-        const extensions = await this.#storage.query("get", JSON.stringify(identities), email) || [];
+        const posts = novemberizing.array.map(await novemberizing.http.get(`${this.#host}/wp/v2/posts&include=${identities}`), WordpressPost.#hide);
+        const extensions = novemberizing.as.array(await this.#storage.query("get", JSON.stringify(identities), email));
 
-        return posts.map((post, i) => Object.assign(post, { extension: extensions.find(o => o.id === post.id) }));
+        return posts.map(post => Object.assign(post, { extension: extensions ? extensions.find(o => o.id === post.id) : null }));
     }
 
     async list(page, email) {
-        const posts = await novemberizing.http.get(`${this.#host}/wp/v2/posts&page=${page}`);
+        const posts = novemberizing.array.map(await novemberizing.http.get(`${this.#host}/wp/v2/posts&page=${page || 1}`), WordpressPost.#hide);
 
         const identities = posts.map(post => post.id);
-        const extensions = await this.#storage.query("get", JSON.stringify(identities), email) || [];
+        const extensions = novemberizing.as.array(await this.#storage.query("get", JSON.stringify(identities), email));
 
-        return posts.map((post, i) => Object.assign(post, { extension: extensions.find(o => o.id === post.id) }));
+        return posts.map(post => Object.assign(post, { extension: extensions ? extensions.find(o => o.id === post.id) : null }));
     }
 
     async off() {
