@@ -39,8 +39,8 @@ export default class WordpressPostLike extends ApplicationServerServiceModule {
      */
     async get(id, email) {
         id = Array.isArray(id) ? id : [ id ];
-        
-        return await this.#storage.query("get", id, email);
+
+        return await this.#storage.query("get", JSON.stringify(id), email);
     }
 
     async off() {

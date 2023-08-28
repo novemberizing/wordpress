@@ -25,6 +25,8 @@ export default class WordpressManager extends ApplicationServerService {
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
 
+
+
             server.express.get(`${this.path}/post/:id`, async (req, res) => {
                 await WordpressManager.call(async () => res.send(await this.postGet(req.params.id, req.user)),
                                                   e  => res.status(500).send(WordpressManager.error(e)));
@@ -35,10 +37,17 @@ export default class WordpressManager extends ApplicationServerService {
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
 
+            server.express.get(`${this.path}/posts/like`, async (req, res) => {
+                await WordpressManager.call(async () => res.send(await this.postsLikeGet(req.query.identities.split(','), req.user)),
+                                                  e  => res.status(500).send(WordpressManager.error(e)));
+            });
+
             server.express.get(`${this.path}/posts/:page`, async (req, res) => {
                 await WordpressManager.call(async () => res.send(await this.postsPageGet(req.params.page, req.user)),
                                                   e  => res.status(500).send(WordpressManager.error(e)));
             });
+
+
 
             server.express.post(`${this.path}/post/:id/like`, async (req, res) => {
                 await WordpressManager.call(async () => res.send(await this.postLike(req.params.id, req.user)),
@@ -82,5 +91,9 @@ export default class WordpressManager extends ApplicationServerService {
 
     async postLike(id, user) {
         return await this.moduleCall("/post/like", "toggle", id, user && user.email);
+    }
+
+    async postsLikeGet(identities, user) {
+        return await this.moduleCall("/post/like", "get", identities, user && user.email);
     }
 }
