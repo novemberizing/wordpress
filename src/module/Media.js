@@ -11,7 +11,6 @@ export default class WordpressMedia extends ApplicationServerServiceModule {
             media.height = media.media_details.height;
             media.url = media.source_url;
 
-            delete media.id;
             delete media.date;
             delete media.date_gmt;
             delete media.guid;
@@ -52,7 +51,13 @@ export default class WordpressMedia extends ApplicationServerServiceModule {
         }
     }
 
-    async get(id) {
-        return WordpressMedia.#hide(id ? await novemberizing.http.get(`${this.#host}/wp/v2/media/${id}`) : null);
+    async single(id) {
+        if(id) return WordpressMedia.#hide(await novemberizing.http.get(`${this.#host}/wp/v2/media/${id}`));
+
+        throw new Error();      // TODO
+    }
+
+    async multiple(identities) {
+        return WordpressMedia.#hide(await novemberizing.http.get(`${this.#host}/wp/v2/media?includes=${identities}`));
     }
 }

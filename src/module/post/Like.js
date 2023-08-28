@@ -1,8 +1,6 @@
 import { ApplicationServerServiceModule } from "@novemberizing/app";
 import Storage from "@novemberizing/storage";
 
-import novemberizing from "../../novemberizing.js";
-
 const extension = {
     toggle: {
         sql: "CALL PROCEDURE_WORDPRESS_POST_LIKE_TOGGLE(?, ?)"
@@ -33,7 +31,15 @@ export default class WordpressPostLike extends ApplicationServerServiceModule {
         return await this.#storage.query("toggle", id, email);
     }
 
+    /**
+     * 
+     * @param {*} id 
+     * @param {*} email 
+     * @returns 
+     */
     async get(id, email) {
+        id = Array.isArray(id) ? id : [ id ];
+        
         return await this.#storage.query("get", id, email);
     }
 

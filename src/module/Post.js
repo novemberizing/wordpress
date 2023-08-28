@@ -88,28 +88,27 @@ export default class WordpressPost extends ApplicationServerServiceModule {
         }
     }
 
-    async get(id, email) {
-        const post = WordpressPost.#hide(id ? await novemberizing.http.get(`${this.#host}/wp/v2/posts/${id}`) : novemberizing.array.front(await novemberizing.http.get(`${this.#host}/wp/v2/posts&offset=0`)));
-
-        const extension = await this.#storage.query("get", id ? id : post.id, email);
-
+    async single(id, email) {
+        const original = id ? await novemberizing.http.get(`${this.#host}/wp/v2/posts/${id}`) : novemberizing.array.front(await novemberizing.http.get(`${this.#host}/wp/v2/posts&offset=0`));
+        const post = WordpressPost.#hide(original);
+        const extension = await this.#storage.query("get", JSON.stringify([id ? id : post.id]), email);
         return Object.assign(post, { extension });
     }
 
-    async posts(page, email) {
-        console.log(page);
-        console.log(`${this.#host}/wp/v2/posts&page=${page}`);
-        let posts = await novemberizing.http.get(`${this.#host}/wp/v2/posts&page=${page}`);
+    async multiple(identities, email) {
+        const posts = await novemberizing.http.get(`${this.#host}/wp/v2/posts?include=${identities}`);
+        const extensions = await this.#storage.query("get", JSON.stringify(identities), email) || [];
 
-        if(Array.isArray(posts)) {
-            for(let i = 0; i < posts.length; i++) {
-                posts[i] = WordpressPost.#hide(posts[i]);
-                const extension = await this.#storage.query("get", posts[i].id, email);
-                posts[i] = Object.assign(posts[i], { extension });
-            }
-        }
+        return posts.map((post, i) => Object.assign(post, { extension: extensions.find(o => o.id === post.id) }));
+    }
 
-        return posts;
+    async list(page, email) {
+        const posts = await novemberizing.http.get(`${this.#host}/wp/v2/posts&page=${page}`);
+
+        const identities = posts.map(post => post.id);
+        const extensions = await this.#storage.query("get", JSON.stringify(identities), email) || [];
+
+        return posts.map((post, i) => Object.assign(post, { extension: extensions.find(o => o.id === post.id) }));
     }
 
     async off() {
